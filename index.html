@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>a very important question 🌸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ffd6e8;
+    --pink-deep:#ff6fa5;
+    --pink-deeper:#ff4d94;
+    --lav:#e6d9ff;
+    --mint:#bdf5e3;
+    --cream:#fff8f2;
+    --gold:#ffd166;
+    --ink:#7a4a5c;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{
+    margin:0;padding:0;
+    width:100%;height:100%;
+    overflow:hidden;
+    overscroll-behavior:none;
+    touch-action:none;
+    background:linear-gradient(160deg,var(--cream) 0%, var(--pink) 55%, var(--lav) 100%);
+    font-family:'Quicksand',sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  body{
+    position:fixed;
+    inset:0;
+    height:100vh;
+    height:100dvh;
+  }
+
+  /* floating ambient shapes */
+  .sky{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
+  .floaty{
+    position:absolute;
+    font-size:1.8rem;
+    opacity:.55;
+    animation:drift 9s ease-in-out infinite;
+    filter:drop-shadow(0 4px 6px rgba(255,111,165,.15));
+  }
+  @keyframes drift{
+    0%,100%{transform:translateY(0) rotate(-6deg);}
+    50%{transform:translateY(-26px) rotate(6deg);}
+  }
+
+  .stage{
+    position:relative;
+    z-index:2;
+    height:100vh;
+    height:100dvh;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:5vh 6vw;
+    text-align:center;
+    overflow:hidden;
+  }
+
+  /* signature mascot: a little CSS bear */
+  .bear{
+    width:110px;height:110px;
+    margin-bottom:14px;
+    position:relative;
+    animation:bob 3s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{transform:translateY(0) rotate(-2deg);}
+    50%{transform:translateY(-10px) rotate(2deg);}
+  }
+  .bear .face{
+    position:absolute; inset:14px 0 0 0;
+    width:110px;height:96px;
+    background:#fff3ea;
+    border-radius:50%;
+    box-shadow:inset 0 -8px 14px rgba(255,111,165,.15);
+  }
+  .bear .ear{
+    position:absolute; top:0; width:38px;height:38px;
+    background:#fff3ea; border-radius:50%;
+  }
+  .bear .ear.l{left:-2px;} .bear .ear.r{right:-2px;}
+  .bear .ear::after{
+    content:"";position:absolute;inset:9px;background:var(--pink);border-radius:50%;
+  }
+  .bear .cheek{
+    position:absolute; top:56px; width:18px;height:11px;
+    background:var(--pink-deep); opacity:.55; border-radius:50%;
+    filter:blur(1px);
+  }
+  .bear .cheek.l{left:10px;} .bear .cheek.r{right:10px;}
+  .bear .eye{
+    position:absolute; top:44px; width:7px;height:9px; background:#6b3d4d; border-radius:50%;
+    animation:blink 4.2s infinite;
+  }
+  .bear .eye.l{left:32px;} .bear .eye.r{right:32px;}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1);}96%{transform:scaleY(.1);}}
+  .bear .nose{
+    position:absolute; top:56px; left:50%; transform:translateX(-50%);
+    width:12px;height:9px; background:#a56b78; border-radius:50%;
+  }
+
+  h1.title{
+    font-family:'Fredoka',sans-serif;
+    font-weight:600;
+    font-size:clamp(1.6rem, 6vw, 2.4rem);
+    color:var(--pink-deeper);
+    margin:0 0 6px;
+    line-height:1.25;
+    text-shadow:0 2px 0 #fff;
+  }
+  p.sub{
+    font-size:clamp(.95rem,3.6vw,1.1rem);
+    color:var(--ink);
+    opacity:.8;
+    margin:0 0 34px;
+    max-width:340px;
+  }
+
+  .buttons{
+    position:relative;
+    display:flex;
+    gap:22px;
+    align-items:center;
+    justify-content:center;
+    min-height:140px;
+    width:100%;
+    max-width:420px;
+  }
+
+  button{
+    font-family:'Fredoka',sans-serif;
+    border:none;
+    cursor:pointer;
+    border-radius:999px;
+    font-weight:600;
+    letter-spacing:.02em;
+    touch-action:none;
+    transition:transform .15s ease, box-shadow .15s ease, font-size .25s ease, padding .25s ease;
+  }
+
+  #yesBtn{
+    background:linear-gradient(135deg,var(--pink-deep),#ff9ac4);
+    color:#fff;
+    padding:16px 34px;
+    font-size:1.15rem;
+    box-shadow:0 10px 0 #d84f8a, 0 16px 24px rgba(255,111,165,.35);
+  }
+  #yesBtn:active{transform:translateY(6px); box-shadow:0 4px 0 #d84f8a, 0 8px 14px rgba(255,111,165,.35);}
+
+  #noBtn{
+    position:relative;
+    background:#fff;
+    color:var(--ink);
+    padding:0 18px;
+    font-size:.95rem;
+    box-shadow:0 8px 0 #e9c9d4, 0 12px 18px rgba(122,74,92,.12);
+    z-index:5;
+    width:112px;
+    height:52px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .noBtn-fixed{
+    position:fixed;
+    top:0; left:0;
+    margin:0;
+    transition:transform .45s cubic-bezier(.34,1.56,.64,1);
+    will-change:transform;
+  }
+
+  .hint{
+    margin-top:26px;
+    font-size:.85rem;
+    opacity:.55;
+    max-width:280px;
+  }
+
+  /* ===== celebration screen ===== */
+  #celebration{
+    position:fixed; inset:0;
+    z-index:50;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    padding:8vh 6vw;
+    background:radial-gradient(circle at 50% 20%, #fff0f6 0%, var(--pink) 45%, var(--lav) 100%);
+    overflow:hidden;
+  }
+  #celebration.show{display:flex;}
+
+  .big-heart{
+    font-size:clamp(3.5rem,18vw,6rem);
+    animation:pop .6s cubic-bezier(.34,1.56,.64,1) both, pulse 1.6s ease-in-out 0.6s infinite;
+    filter:drop-shadow(0 8px 16px rgba(255,77,148,.35));
+  }
+  @keyframes pop{0%{transform:scale(0) rotate(-30deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+
+  h2.yay{
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(1.8rem,8vw,3rem);
+    color:var(--pink-deeper);
+    margin:10px 0 6px;
+    text-shadow:0 2px 0 #fff;
+  }
+  p.yay-sub{
+    font-size:clamp(1rem,4vw,1.2rem);
+    max-width:360px;
+    opacity:.85;
+  }
+
+  .confetti{
+    position:absolute;
+    top:-10%;
+    width:10px;height:16px;
+    border-radius:3px;
+    opacity:.9;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(115vh) rotate(540deg); opacity:.4; }
+  }
+
+  .float-emoji{
+    position:absolute;
+    animation:floatUp linear forwards;
+    pointer-events:none;
+  }
+  @keyframes floatUp{
+    0%{transform:translateY(0) scale(0.6); opacity:0;}
+    10%{opacity:1;}
+    100%{transform:translateY(-100vh) scale(1.1); opacity:0;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .floaty,.bear,.big-heart{animation:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky"></div>
+
+<div class="stage" id="stage">
+  <div class="bear">
+    <div class="ear l"></div><div class="ear r"></div>
+    <div class="face"></div>
+    <div class="cheek l"></div><div class="cheek r"></div>
+    <div class="eye l"></div><div class="eye r"></div>
+    <div class="nose"></div>
+  </div>
+
+  <h1 class="title">will you go on a date<br>with me? 🥺💗</h1>
+  <p class="sub">take your time... but the answer's already written in the stars ✨</p>
+
+  <div class="buttons" id="buttonRow">
+    <button id="yesBtn">yes, obviously 💖</button>
+    <button id="noBtn">no</button>
+  </div>
+
+  <p class="hint">psst, the no button is a little shy 🙈</p>
+</div>
+
+<div id="celebration">
+  <div class="big-heart">💗</div>
+  <h2 class="yay">YAAAY! 🎉</h2>
+  <p class="yay-sub">she said yes!! get ready, because this is going to be the cutest date ever 🌸🧸💌</p>
+</div>
+
+<script>
+  // ambient floating emojis
+  const sky = document.getElementById('sky');
+  const emojis = ['🌸','💕','⭐','🎀','🧸','💫','🌷','✨'];
+  for(let i=0;i<16;i++){
+    const el = document.createElement('div');
+    el.className='floaty';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left = Math.random()*94+'%';
+    el.style.top = Math.random()*94+'%';
+    el.style.animationDuration = (6+Math.random()*6)+'s';
+    el.style.animationDelay = (Math.random()*4)+'s';
+    el.style.fontSize = (1.2+Math.random()*1.6)+'rem';
+    sky.appendChild(el);
+  }
+
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const NO_W = 112, NO_H = 52, MARGIN = 14;
+  let scale = 1;
+  let dodges = 0;
+  let dodging = false; // debounce guard so one tap can't fire twice
+
+  function viewportSize(){
+    // visualViewport is far more reliable than window.innerWidth on mobile
+    if(window.visualViewport){
+      return { w: window.visualViewport.width, h: window.visualViewport.height };
+    }
+    return { w: window.innerWidth, h: window.innerHeight };
+  }
+
+  function randomSpot(){
+    const {w,h} = viewportSize();
+    const maxX = Math.max(MARGIN, w - NO_W - MARGIN);
+    const maxY = Math.max(MARGIN, h - NO_H - MARGIN);
+    const x = MARGIN + Math.random()*(maxX-MARGIN);
+    const y = MARGIN + Math.random()*(maxY-MARGIN);
+    return {x,y};
+  }
+
+  function placeNoButton(){
+    const {x,y} = randomSpot();
+    noBtn.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+  }
+
+  // put it into free-floating fixed positioning right away, at its current spot
+  function initNoButton(){
+    const rect = noBtn.getBoundingClientRect();
+    noBtn.classList.add('noBtn-fixed');
+    noBtn.style.transform = `translate(${Math.round(rect.left)}px, ${Math.round(rect.top)}px)`;
+    // gentle continuous drifting so it's always visibly on the move
+    setInterval(function(){ if(!dodging) placeNoButton(); }, 1800);
+  }
+  initNoButton();
+
+  function dodge(){
+    if(dodging) return; // ignore duplicate events from the same tap
+    dodging = true;
+
+    dodges++;
+    // grow yes button a bit each dodge, cap it
+    scale = Math.min(1 + dodges*0.09, 2.1);
+    yesBtn.style.fontSize = (1.15*scale)+'rem';
+    yesBtn.style.padding = (16*scale)+'px '+(34*scale)+'px';
+
+    placeNoButton();
+
+    const notes = ["no","try again 😏","nope~ 🎀","catch me 🐇","not today 😹","nu-uh 🙈"];
+    noBtn.textContent = notes[Math.floor(Math.random()*notes.length)];
+
+    setTimeout(function(){ dodging = false; }, 500);
+  }
+
+  // unify pointer handling: covers touch, mouse and stylus in one listener,
+  // fires the instant a finger/cursor gets near — well before a tap can land
+  noBtn.addEventListener('pointerenter', function(e){ dodge(); });
+  noBtn.addEventListener('pointerdown', function(e){ e.preventDefault(); dodge(); }, {passive:false});
+  noBtn.addEventListener('touchstart', function(e){ e.preventDefault(); dodge(); }, {passive:false});
+  // safety net: if it's ever somehow "clicked", still dodge instead of doing anything
+  noBtn.addEventListener('click', function(e){ e.preventDefault(); dodge(); });
+
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', placeNoButton);
+  }
+  window.addEventListener('resize', placeNoButton);
+
+  yesBtn.addEventListener('click', celebrate);
+
+  function celebrate(){
+    document.getElementById('stage').style.display='none';
+    const cel = document.getElementById('celebration');
+    cel.classList.add('show');
+
+    // confetti burst
+    const colors = ['#ff6fa5','#ffd166','#bdf5e3','#e6d9ff','#ff9ac4','#fff'];
+    for(let i=0;i<90;i++){
+      const c = document.createElement('div');
+      c.className='confetti';
+      c.style.left = Math.random()*100+'%';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDuration = (2.2+Math.random()*2.2)+'s';
+      c.style.animationDelay = (Math.random()*1.4)+'s';
+      c.style.width = (6+Math.random()*6)+'px';
+      c.style.height = (10+Math.random()*8)+'px';
+      cel.appendChild(c);
+    }
+
+    // floating hearts/emoji rising up
+    const floatEmojis = ['💖','💕','🌸','✨','💗','🎀','🧸','🌷'];
+    const spawnFloat = () => {
+      const f = document.createElement('div');
+      f.className='float-emoji';
+      f.textContent = floatEmojis[Math.floor(Math.random()*floatEmojis.length)];
+      f.style.left = Math.random()*100+'%';
+      f.style.bottom = '-40px';
+      f.style.fontSize = (1.3+Math.random()*2)+'rem';
+      f.style.animationDuration = (3.5+Math.random()*3)+'s';
+      cel.appendChild(f);
+      setTimeout(()=>f.remove(), 7000);
+    };
+    const floatInterval = setInterval(spawnFloat, 220);
+    setTimeout(()=>clearInterval(floatInterval), 9000);
+  }
+</script>
+</body>
+</html>
