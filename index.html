@@ -156,14 +156,17 @@
   }
   #yesBtn:active{transform:translateY(6px); box-shadow:0 4px 0 #d84f8a, 0 8px 14px rgba(255,111,165,.35);}
 
+  /* Solid, high-contrast fill so this button is visible no matter where
+     on the gradient background it ends up drifting to. */
   #noBtn{
     position:relative;
-    background:#fff;
-    color:var(--ink);
+    background:linear-gradient(135deg,#ffffff,#fff0f6);
+    border:2.5px solid var(--pink-deep);
+    color:var(--pink-deeper);
     padding:0 18px;
-    font-size:.95rem;
-    box-shadow:0 8px 0 #e9c9d4, 0 12px 18px rgba(122,74,92,.12);
-    z-index:5;
+    font-size:.92rem;
+    box-shadow:0 8px 0 #e05a90, 0 12px 20px rgba(255,77,148,.3);
+    z-index:100;
     width:112px;
     height:52px;
     white-space:nowrap;
@@ -172,7 +175,11 @@
     display:flex;
     align-items:center;
     justify-content:center;
+    /* keep it out of the way until JS has placed it correctly, so it
+       never flashes at a wrong (0,0) spot before init finishes */
+    visibility:hidden;
   }
+  #noBtn.placed{ visibility:visible; }
 
   .noBtn-fixed{
     position:fixed;
@@ -301,25 +308,39 @@
 
   const noBtn = document.getElementById('noBtn');
   const yesBtn = document.getElementById('yesBtn');
-  const NO_W = 112, NO_H = 52, MARGIN = 14;
+  const NO_W = 112, NO_H = 52, MARGIN = 16;
   let scale = 1;
   let dodges = 0;
-  let dodging = false; // debounce guard so one tap can't fire twice
+  let dodging = false;   // debounce guard so one tap can't fire twice
+  let lastX = 0, lastY = 0;
 
+  // Most reliable "visible area" on mobile: intersect the layout viewport
+  // (documentElement) with the visualViewport (excludes on-screen keyboard /
+  // browser chrome when present). Falls back gracefully if either is missing.
   function viewportSize(){
-    // visualViewport is far more reliable than window.innerWidth on mobile
+    const docW = document.documentElement.clientWidth || window.innerWidth;
+    const docH = document.documentElement.clientHeight || window.innerHeight;
     if(window.visualViewport){
-      return { w: window.visualViewport.width, h: window.visualViewport.height };
+      return {
+        w: Math.min(docW, window.visualViewport.width),
+        h: Math.min(docH, window.visualViewport.height)
+      };
     }
-    return { w: window.innerWidth, h: window.innerHeight };
+    return { w: docW, h: docH };
   }
 
   function randomSpot(){
     const {w,h} = viewportSize();
     const maxX = Math.max(MARGIN, w - NO_W - MARGIN);
     const maxY = Math.max(MARGIN, h - NO_H - MARGIN);
-    const x = MARGIN + Math.random()*(maxX-MARGIN);
-    const y = MARGIN + Math.random()*(maxY-MARGIN);
+    let x = MARGIN + Math.random()*(maxX-MARGIN);
+    let y = MARGIN + Math.random()*(maxY-MARGIN);
+    // avoid re-picking basically the same spot twice in a row
+    if(Math.abs(x-lastX) < 40 && Math.abs(y-lastY) < 40){
+      x = (x + maxX/2) % Math.max(maxX, 1);
+      y = (y + maxY/2) % Math.max(maxY, 1);
+    }
+    lastX = x; lastY = y;
     return {x,y};
   }
 
@@ -328,15 +349,41 @@
     noBtn.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
   }
 
-  // put it into free-floating fixed positioning right away, at its current spot
+  // Keep the button inside bounds if the viewport changes size
+  // (rotation, keyboard, browser UI collapsing) without teleporting it far.
+  function reclampNoButton(){
+    const {w,h} = viewportSize();
+    const maxX = Math.max(MARGIN, w - NO_W - MARGIN);
+    const maxY = Math.max(MARGIN, h - NO_H - MARGIN);
+    const clampedX = Math.min(Math.max(lastX, MARGIN), maxX);
+    const clampedY = Math.min(Math.max(lastY, MARGIN), maxY);
+    lastX = clampedX; lastY = clampedY;
+    noBtn.style.transform = `translate(${Math.round(clampedX)}px, ${Math.round(clampedY)}px)`;
+  }
+
   function initNoButton(){
-    const rect = noBtn.getBoundingClientRect();
     noBtn.classList.add('noBtn-fixed');
-    noBtn.style.transform = `translate(${Math.round(rect.left)}px, ${Math.round(rect.top)}px)`;
-    // gentle continuous drifting so it's always visibly on the move
+    placeNoButton();               // first placement uses real, settled layout
+    noBtn.classList.add('placed'); // reveal only now — never flashes at (0,0)
     setInterval(function(){ if(!dodging) placeNoButton(); }, 1800);
   }
-  initNoButton();
+
+  // Wait for fonts + full load + a couple of animation frames so the very
+  // first measurement/placement is based on final, settled layout — this is
+  // what was causing the button to end up positioned incorrectly/invisibly.
+  function boot(){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(initNoButton);
+    });
+  }
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(boot).catch(boot);
+  }
+  if(document.readyState === 'complete'){
+    boot();
+  } else {
+    window.addEventListener('load', boot, {once:true});
+  }
 
   function dodge(){
     if(dodging) return; // ignore duplicate events from the same tap
@@ -365,9 +412,12 @@
   noBtn.addEventListener('click', function(e){ e.preventDefault(); dodge(); });
 
   if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', placeNoButton);
+    window.visualViewport.addEventListener('resize', reclampNoButton);
   }
-  window.addEventListener('resize', placeNoButton);
+  window.addEventListener('resize', reclampNoButton);
+  window.addEventListener('orientationchange', function(){
+    setTimeout(reclampNoButton, 250);
+  });
 
   yesBtn.addEventListener('click', celebrate);
 
