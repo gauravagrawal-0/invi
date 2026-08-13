@@ -175,11 +175,10 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    /* keep it out of the way until JS has placed it correctly, so it
-       never flashes at a wrong (0,0) spot before init finishes */
-    visibility:hidden;
+    /* Visible by default in normal flow. JS upgrades it to a floating,
+       dodging button once it can — but if JS is ever blocked/delayed
+       (e.g. opened as a local file), the button still shows here. */
   }
-  #noBtn.placed{ visibility:visible; }
 
   .noBtn-fixed{
     position:fixed;
